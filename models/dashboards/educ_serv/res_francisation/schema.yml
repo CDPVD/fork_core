@@ -1,0 +1,43 @@
+
+version: 2
+
+models:
+  - name: resfr_fact_eleve_francisation
+    config:
+      tags:
+        - res_francisation
+    description: >
+      liste d'élève ayant une mesure de francisation par année.
+    columns:
+      - name: fiche
+        description: Unique ID of the student
+      - name: id_eco
+        description: Unique ID of the school per year
+      - name: type_mesure
+        description: code de la mesure de francisation 
+      - name: description_type_mesure
+        description: description de la mesure de francisation
+      - name: date_deb_mesure
+        description: date de début de la mesure
+      - name: date_fin_mesure
+        description: date de fin de la mesure
+    tests:
+      - resolution:
+          combination_of_columns:
+            - fiche
+            - id_eco
+            - type_mesure
+
+  - name: resfr_fact_resultat_francisation
+    config:
+      tags:
+        - res_francisation
+    description: >
+      liste d'élève ayant une mesure de francisation par année.            
+    tests:
+      - resolution:
+          combination_of_columns:
+            - fiche
+            - annee
+            - code_matiere
+            - no_comp
