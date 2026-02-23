@@ -36,14 +36,14 @@ select
     is_current,
     remuneration_type,
     renumeration_mode,
-    type_ as 'type',
+    statut_eng,
     {{
         dbt_utils.generate_surrogate_key(
             [
                 "job_department",
                 "workplace_name",
                 "job_class",
-                "type_",
+                "statut_eng",
                 "sex_friendly_name",
                 "is_current",
             ]

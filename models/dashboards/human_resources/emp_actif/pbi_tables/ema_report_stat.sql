@@ -26,7 +26,7 @@ with
             job_class,
             job_department,
             is_current,
-            type_,
+            statut_eng,
             count(matr) as total_emp_by_group,
             sum(case when sex_friendly_name = 'homme' then 1 else 0 end) as total_men,
             sum(case when sex_friendly_name = 'femme' then 1 else 0 end) as total_women,
@@ -53,7 +53,7 @@ with
             workplace_name,
             job_class,
             job_department,
-            type_,
+            statut_eng,
             is_current
     ),
 
@@ -63,7 +63,7 @@ with
             workplace_name,
             job_class,
             job_department,
-            type_,
+            statut_eng,
             is_current,
             total_men,
             total_women,
@@ -100,7 +100,7 @@ select
                 "job_department",
                 "workplace_name",
                 "job_class",
-                "type_",
+                "statut_eng",
                 "sex_friendly_name",
                 "is_current",
             ]

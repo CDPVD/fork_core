@@ -58,9 +58,10 @@ with
             on dim_e.matr = emp.matr
             and emp.ind_empl_princ = 1
         inner join {{ ref("i_pai_dos") }} as dos on dim_e.matr = dos.matr
+        left join {{ ref("etat_empl") }} as etat on emp.etat = etat.etat_empl
         where
             -- Keep active employees only
-            dos.etat_doss = 'A' and emp.date_eff >= '2020-07-01 00:00:00'
+            dos.etat_doss = 'A' and etat.etat_actif = 1
     ),
 
     -- Add permanency status
@@ -135,15 +136,7 @@ select
     src.remuneration_type,
     src.renumeration_mode,
     -- Compute derived type_
-    case
-        when stat.is_reg = 0 and src.type = 'A'
-        then 'Temporaire (paie automatique)'
-        when stat.is_reg = 0 and src.type = 'P'
-        then 'Temporaire (sur pièce)'
-        when stat.is_reg = 1
-        then 'Régulier'
-        else 'Autres'
-    end as type_
+    stat.engagement_status_code as statut_eng
 from remuneration as src
 left join {{ ref("dim_mapper_workplace") }} lieu on src.lieu_trav = lieu.workplace
 left join {{ ref("dim_mapper_job_group") }} as job on src.corp_empl = job.job_group

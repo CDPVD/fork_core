@@ -25,7 +25,7 @@ select
                 "job_department",
                 "workplace_name",
                 "job_class",
-                "type_",
+                "statut_eng",
                 "sex_friendly_name",
                 "is_current",
             ]
@@ -34,8 +34,10 @@ select
     job_department,
     workplace_name,
     job_class,
-    type_ as 'type',
+    statut_eng,
     sex_friendly_name,
-    is_current
+    is_current,
+    case when is_current = 1 then 'Oui' else 'Non' end as statut_actif
 from {{ ref("emp_actif_fact_base") }} as src
-group by job_department, workplace_name, job_class, type_, sex_friendly_name, is_current
+group by
+    job_department, workplace_name, job_class, statut_eng, sex_friendly_name, is_current
