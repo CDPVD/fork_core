@@ -1,0 +1,1 @@
+SELECT DISTINCT categorie FROM {{ref("aff_report_YTD_comp")}}

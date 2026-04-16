@@ -1,0 +1,1 @@
+SELECT DISTINCT annee_comp FROM {{ref("aff_report_YTD_comp")}} WHERE annee_comp IS NOT NULL

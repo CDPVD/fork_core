@@ -1,0 +1,1 @@
+SELECT * FROM {{ref("aff_fact_paiements")}}

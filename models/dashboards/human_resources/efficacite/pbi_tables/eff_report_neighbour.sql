@@ -47,27 +47,37 @@ with
         left join
             {{ ref("dim_mapper_lieu_jumele") }} as jml_neighbour
             on src.neighbour_lieu_jumele = jml_neighbour.lieu_jumele
+    ),
+
+    neighbours as (
+        select
+            filter_key,
+            max(taux_reussite) as taux_reussite,
+            max(cohort_difficulty_score) as cohort_difficulty_score,
+            max(nb_totaux_eleve) as nb_totaux_eleve,
+            max(ratio_heure_ele) as ratio_heure_ele,
+            'school' as source,
+            concat('(Source) - ', max(nom_lieu_jumele)) as target_nom_lieu_jumele,
+            max(filter_key) as category_join_key
+        from base
+        group by filter_key
+        union
+        select
+            filter_key,
+            neighbour_taux_reussite,
+            neighbour_cohorte_difficulty_score,
+            neighbour_nb_totaux_eleve,
+            neighbour_ratio_heure_ele,
+            'neighbour' as source,
+            concat('(Comparable) - ', neighbour_nom_lieu_jumele) as target_nom_lieu_jumele,
+            category_join_key as category_join_key
+        from base
     )
 
-select
-    filter_key,
-    max(taux_reussite) as taux_reussite,
-    max(cohort_difficulty_score) as cohort_difficulty_score,
-    max(nb_totaux_eleve) as nb_totaux_eleve,
-    max(ratio_heure_ele) as ratio_heure_ele,
-    'school' as source,
-    concat('(Source) - ', max(nom_lieu_jumele)) as target_nom_lieu_jumele,
-    max(filter_key) as category_join_key
-from base
-group by filter_key
-union
-select
-    filter_key,
-    neighbour_taux_reussite,
-    neighbour_cohorte_difficulty_score,
-    neighbour_nb_totaux_eleve,
-    neighbour_ratio_heure_ele,
-    'neighbour' as source,
-    concat('(Comparable) - ', neighbour_nom_lieu_jumele) as target_nom_lieu_jumele,
-    category_join_key as category_join_key
-from base
+    select nei.* 
+            , prop_pi
+            , prop_classes_adapt
+    from neighbours nei
+    left join {{ref("eff_report_diff_tooltip")}} tool on nei.category_join_key = tool.filter_key
+
+

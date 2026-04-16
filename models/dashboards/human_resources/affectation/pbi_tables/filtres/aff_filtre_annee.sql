@@ -1,0 +1,1 @@
+SELECT DISTINCT ANNEE FROM {{ref("aff_fact_paiements")}}

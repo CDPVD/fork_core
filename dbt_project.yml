@@ -151,6 +151,12 @@ models:
 
       human_resources:
         +tags: ["human_resources"]
+        affectation:
+          +tags: ["affectation"]
+          +schema: dashboard_affectation
+          pbi_tables:
+            +post-hook:
+              ["{{ core_dashboards_store.stamp_model('dashboard_affectation') }}"]
         efficacite:
           +tags: ["efficacite"]
           +schema: dashboard_efficacite

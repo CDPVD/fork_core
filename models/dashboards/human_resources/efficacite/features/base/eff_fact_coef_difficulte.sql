@@ -21,29 +21,41 @@ with
             lieu_jumele,
             annee,
             count(fiche) as nb_totaux_eleve,
-            sum(is_difficulte) as nb_difficulte,
+            --sum(is_difficulte) as nb_difficulte,
             sum(is_pi) as nb_pi
         from {{ ref("eff_fact_eleve_fgj") }}
         group by lieu_jumele, annee
     ),
 
+    prop_class_adapt as (
+        select 
+            lieu_jumele
+            , annee
+            , prop_classes_adapt
+        from {{ref("eff_fact_prop_grp_adapt")}}
+    ),
+
     nrm as (
         select
-            lieu_jumele,
-            annee,
+            ele.lieu_jumele,
+            ele.annee,
             -- metrics
             nb_totaux_eleve,
-            (nb_difficulte * 1.0) / (nb_totaux_eleve * 1.0) as prop_difficulte,
-            (nb_pi * 1.0) / (nb_totaux_eleve * 1.0) as prop_pi
-        from agg_ele
+            --(nb_difficulte * 1.0) / (nb_totaux_eleve * 1.0) as prop_difficulte,
+            (nb_pi * 1.0) / (nb_totaux_eleve * 1.0) as prop_pi,
+            prop_classes_adapt
+        from agg_ele ele
+        left join prop_class_adapt cadapt ON ele.lieu_jumele = cadapt.lieu_jumele AND ele.annee = cadapt.annee
     ),
 
     stats as (
         select
             avg(cast(nb_totaux_eleve as float)) as mean_tot,
             stdev(cast(nb_totaux_eleve as float)) as sd_tot,
-            avg(cast(prop_difficulte as float)) as mean_diff,
-            stdev(cast(prop_difficulte as float)) as sd_diff,
+            --avg(cast(prop_difficulte as float)) as mean_diff,
+            --stdev(cast(prop_difficulte as float)) as sd_diff,
+            avg(cast(prop_classes_adapt as float)) as mean_adapt,
+            stdev(cast(prop_classes_adapt as float)) as sd_adapt,
             avg(cast(prop_pi as float)) as mean_pi,
             stdev(cast(prop_pi as float)) as sd_pi
         from nrm
@@ -57,8 +69,10 @@ with
             /* Z-scores (standardisation) */
             (cast(rd.nb_totaux_eleve as float) - s.mean_tot)
             / nullif(s.sd_tot, 0.0) as z_totaux_eleve,
-            (cast(rd.prop_difficulte as float) - s.mean_diff)
-            / nullif(s.sd_diff, 0.0) as z_difficulte,
+            --(cast(rd.prop_difficulte as float) - s.mean_diff)
+            --/ nullif(s.sd_diff, 0.0) as z_difficulte,
+            (cast(rd.prop_classes_adapt as float) - s.mean_adapt)
+            / nullif(s.sd_adapt, 0.0) as z_adapt,
             (cast(rd.prop_pi as float) - s.mean_pi) / nullif(s.sd_pi, 0.0) as z_pi
         from nrm as rd
         cross join stats as s
@@ -68,7 +82,7 @@ with
     w as (
         select
             cast(w_totaux_eleve as float) as w_totaux_eleve,
-            cast(w_nb_difficulte as float) as w_difficulte,
+            cast(w_classes_adapt as float) as w_adapt,
             cast(w_pi as float) as w_pi
         from {{ ref("eff_coefficients_premier_axes") }}
     )
@@ -79,13 +93,13 @@ select
     z.annee,
     -- Z metrics
     z.z_totaux_eleve,
-    z.z_difficulte,
+    z.z_adapt,
     z.z_pi,
     -- First PCA loading N(100, 15)
     cast(
         15 * (
             z.z_totaux_eleve * w.w_totaux_eleve
-            + z.z_difficulte * w.w_difficulte
+            + z.z_adapt * w.w_adapt
             + z.z_pi * w.w_pi
         )
         + 100 as int

@@ -298,7 +298,7 @@ with
 select
     annee,
     matricule,
-    no_cheq,
+    ann_sco.no_cheq,
     code_pmnt,
     -- mode_paiement,
     -- code_provenance,
@@ -312,5 +312,8 @@ select
     etat_empl,
     lieu_jumele,
     stat_eng,
-    date_cheq_paiement
+    date_cheq_paiement,
+    no_per as paiement_period,
+    perP.date_fin_per as date_fin_per_off
 from ann_sco
+LEFT JOIN {{ref("stg_paiement_period")}} perP on ann_sco.matricule = perP.matr AND ann_sco.no_cheq = perP.no_cheq
