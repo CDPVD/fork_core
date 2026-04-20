@@ -1,0 +1,12 @@
+SELECT annee
+      , code_pmnt
+      , corp_empl
+      , total_mnt_brut
+      , hrs_remunere
+      , lieu_jumele
+      , paiement_period
+      , nom_lieu_jumele
+      , categorie_lieu_jumele
+      , descr_corp_empl
+      , descr_cat_code_pmnt
+FROM {{ref("aff_fact_paiements")}}
