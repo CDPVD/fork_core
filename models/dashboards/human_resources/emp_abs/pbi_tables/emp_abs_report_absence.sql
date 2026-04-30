@@ -40,49 +40,6 @@ with
             abs.matricule,
             emp.legal_name as nom,
             emp.sex_friendly_name as genre,
-            case
-                when
-                    datediff(
-                        year,
-                        emp.birth_date,
-                        cast(left(abs.annee, 4) + '-07-01' as date)
-                    )
-                    < 25
-                then '24 ans et moins'
-                when
-                    datediff(
-                        year,
-                        emp.birth_date,
-                        cast(left(abs.annee, 4) + '-07-01' as date)
-                    )
-                    between 25 and 34
-                then '25 à 34 ans'
-                when
-                    datediff(
-                        year,
-                        emp.birth_date,
-                        cast(left(abs.annee, 4) + '-07-01' as date)
-                    )
-                    between 35 and 44
-                then '35 à 44 ans'
-                when
-                    datediff(
-                        year,
-                        emp.birth_date,
-                        cast(left(abs.annee, 4) + '-07-01' as date)
-                    )
-                    between 45 and 54
-                then '45 à 54 ans'
-                when
-                    datediff(
-                        year,
-                        emp.birth_date,
-                        cast(left(abs.annee, 4) + '-07-01' as date)
-                    )
-                    between 55 and 64
-                then '55 à 64 ans'
-                else '65 ans et plus'
-            end as tranche_age,
             datediff(
                 year, emp.birth_date, cast(left(abs.annee, 4) + '-07-01' as date)
             ) as age,
@@ -98,11 +55,12 @@ with
             jds_jeudi,
             jds_vendredi,
             duree_descr,
-            date,
+            abs.date,
             jour_absence,
             hr_abs,
             etc_abs,
-            abs.gr_paie
+            abs.gr_paie,
+            tr.tranche_age
         from {{ ref("fact_absence") }} as abs
 
         inner join {{ ref("dim_employees") }} as emp on abs.matricule = emp.matr
@@ -114,6 +72,10 @@ with
 
         inner join
             {{ ref("dim_mapper_workplace") }} as wp on abs.lieu_trav = wp.workplace
+        inner join
+            {{ ref("emp_abs_fact_base") }} as tr
+            on abs.matricule = tr.matricule
+            and abs.date = tr.date
     )
 
 select
