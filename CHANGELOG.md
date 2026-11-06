@@ -2,6 +2,40 @@
 
 
 
+## v0.23.4+20261030 (2026-10-30)
+
+### Bug fixes
+
+* fix(efficiency): the dashboard does not collapse the result anymore ([`caa3f94`](https://github.com/Sciance-Inc/core.dashboards_store/commit/caa3f944ac023f689da1d65dd4cce1d2088ad5ec))
+
+
+## v0.23.3+20261028 (2026-10-28)
+
+### Bug fixes
+
+* fix(human_resources): préserver les périodes continues par emploi ([`985913c`](https://github.com/Sciance-Inc/core.dashboards_store/commit/985913c2cd602f55de0eb14aaec1b89728793b43))
+
+### Chores
+
+* chore: ignorer les fichiers locaux Serena ([`b665940`](https://github.com/Sciance-Inc/core.dashboards_store/commit/b66594059da88b41e5a1a1207af016c027854d5e))
+
+
+## v0.23.2+20261028 (2026-10-28)
+
+### Bug fixes
+
+* fix(efficacite): éviter la duplication des paiements dans stg_paiement_history
+
+- stg_paiement_history_employment_periods : une ligne par période d'activité
+  de stg_activity_history, sans regroupement des périodes non contiguës
+- stg_paiement_history : chaque paiement est rattaché à sa période la plus
+  récente (row_number, rn = 1) avant le calcul des heures, sans sum
+- _flagged_hist : une seule période retenue si plusieurs débutent le
+  lendemain du paiement
+- tests : unicité de stg_hrs_calc sur (corp_empl, stat_eng) et une ligne par
+  paiement dans stg_paiement_history ([`16e2d49`](https://github.com/Sciance-Inc/core.dashboards_store/commit/16e2d49153b1d717da42c533d5eb5ff0ed4ff334))
+
+
 ## v0.23.1+20260916 (2026-09-16)
 
 ### Bug fixes
